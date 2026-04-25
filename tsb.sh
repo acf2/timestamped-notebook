@@ -109,6 +109,26 @@ EOF
 	echo ${SQL_SHOW_NOTES_INSIDE_INTERVAL} | sqlite3 "$DB_NAME";
 }
 
+find_notes_with_pattern() {
+	DB_NAME="$1";
+
+	[ $# -lt 2 ] && echo $MSG_TOO_FEW_ARGUMENTS && return 1;
+
+	PATTERN="$2";
+
+	SQL_SHOW_NOTES_MATCHING_PATTERN=$(cat <<EOF
+select datetime(note_date, 'unixepoch', 'localtime') as '$TIMESTAMP_COLNAME',
+       note_body as '$NOTE_COLNAME'
+from notes
+where note_body like '${PATTERN//\'/\'\'}'
+order by note_date asc;
+EOF
+	);
+
+	echo ${SQL_SHOW_NOTES_MATCHING_PATTERN} | sqlite3 "$DB_NAME";
+
+}
+
 USAGE_MSG="Usage: $EXTERNAL_NAME <notebook filename> <command> [<args>]"
 
 main() {
@@ -120,6 +140,7 @@ Commands:
 	s[how] [<number>]           Show <number> of most recent notes, or all at once.
 	i[nterval] <start> <end>    Show notes taken inside time interval. Format: 'YYYY-MM-DD HH:MM'
 	t[oday] [<start> [<end>]]   Show notes taken today inside time interval, or all of them at once. Format: HH:MM
+	f[ind] <pattern>            Find notes matching SQLite3 pattern with 'like' operator.
 EOF
 );
 
@@ -144,6 +165,10 @@ EOF
 		"today"|"t")
 			create_db_file_if_not_exists "$NOTEBOOK_DB";
 			show_notes_today_inside_interval "$NOTEBOOK_DB" "${@:3}";
+			;;
+		"find"|"f")
+			create_db_file_if_not_exists "$NOTEBOOK_DB";
+			find_notes_with_pattern "$NOTEBOOK_DB" "${@:3}";
 			;;
 		*)
 			echo "Unknown command: $COMMAND";
