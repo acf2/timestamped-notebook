@@ -97,7 +97,7 @@ show_notes_today_inside_interval() {
 	START="unixepoch(datetime('now', 'start of day'), 'utc')" ||
 	START="unixepoch(datetime('now', 'start of day', '$2'), 'utc')";
 
-	SQL_SHOW_NOTES_TODAY_INSIDE_INTERVAL=$(cat <<EOF
+	SQL_SHOW_NOTES_INSIDE_INTERVAL=$(cat <<EOF
 select datetime(note_date, 'unixepoch', 'localtime') as '$TIMESTAMP_COLNAME',
        note_body as '$NOTE_COLNAME'
 from notes
@@ -106,7 +106,7 @@ order by note_date asc;
 EOF
 	);
 
-	echo ${SQL_SHOW_NOTES_TODAY_INSIDE_INTERVAL} | sqlite3 "$DB_NAME";
+	echo ${SQL_SHOW_NOTES_INSIDE_INTERVAL} | sqlite3 "$DB_NAME";
 }
 
 USAGE_MSG="Usage: $EXTERNAL_NAME <notebook filename> <command> [<args>]"
@@ -133,19 +133,19 @@ EOF
 	case "$COMMAND" in
 		"note"|"n")
 			create_db_file_if_not_exists "$NOTEBOOK_DB";
-			insert_note_at_editing_end $NOTEBOOK_DB "${@:3}";
+			insert_note_at_editing_end "$NOTEBOOK_DB" "${@:3}";
 			;;
 		"show"|"s")
 			create_db_file_if_not_exists "$NOTEBOOK_DB";
-			show_last_notes $NOTEBOOK_DB "${@:3}";
+			show_last_notes "$NOTEBOOK_DB" "${@:3}";
 			;;
 		"interval"|"i")
 			create_db_file_if_not_exists "$NOTEBOOK_DB";
-			show_notes_inside_interval $NOTEBOOK_DB "${@:3}";
+			show_notes_inside_interval "$NOTEBOOK_DB" "${@:3}";
 			;;
 		"today"|"t")
 			create_db_file_if_not_exists "$NOTEBOOK_DB";
-			show_notes_today_inside_interval $NOTEBOOK_DB "${@:3}";
+			show_notes_today_inside_interval "$NOTEBOOK_DB" "${@:3}";
 			;;
 		*)
 			echo "Unknown command: $COMMAND";
