@@ -127,24 +127,25 @@ EOF
 
 	[ $# -lt 2 ] && echo $MSG_TOO_FEW_ARGUMENTS && echo -e "$HELP_MSG" && return 0;
 
+	NOTEBOOK_DB="$1";
 	COMMAND="$2";
 
 	case "$COMMAND" in
 		"note"|"n")
-			create_db_file_if_not_exists "$2";
-			insert_note_at_editing_end "${@:2}";
+			create_db_file_if_not_exists "$NOTEBOOK_DB";
+			insert_note_at_editing_end "$NOTEBOOK_DB" "${@:3}";
 			;;
 		"show"|"s")
-			create_db_file_if_not_exists "$2";
-			show_last_notes "${@:2}";
+			create_db_file_if_not_exists "$NOTEBOOK_DB";
+			show_last_notes "$NOTEBOOK_DB" "${@:3}";
 			;;
 		"interval"|"i")
-			create_db_file_if_not_exists "$2";
-			show_notes_inside_interval "${@:2}";
+			create_db_file_if_not_exists "$NOTEBOOK_DB";
+			show_notes_inside_interval "$NOTEBOOK_DB" "${@:3}";
 			;;
 		"today"|"t")
-			create_db_file_if_not_exists "$2";
-			show_notes_today_inside_interval "${@:2}";
+			create_db_file_if_not_exists "$NOTEBOOK_DB";
+			show_notes_today_inside_interval "$NOTEBOOK_DB" "${@:3}";
 			;;
 		*)
 			echo "Unknown command: $COMMAND";
