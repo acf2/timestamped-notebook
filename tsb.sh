@@ -123,8 +123,6 @@ Commands:
 EOF
 );
 
-	[ "$1" == "help" ] && echo -e "$HELP_MSG" && return 0;
-
 	[ $# -lt 2 ] && echo $MSG_TOO_FEW_ARGUMENTS && echo -e "$HELP_MSG" && return 0;
 
 	NOTEBOOK_DB="$1";
