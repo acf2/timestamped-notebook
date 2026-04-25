@@ -32,7 +32,7 @@ insert_note_at_editing_end() {
 	${VISUAL:-${EDITOR:-vi}} "${TMPFILE}"; # https://stackoverflow.com/a/60461932
 	NOTE=$(< "$TMPFILE"); # https://stackoverflow.com/a/14118355
 	sqlite3 "$DB_NAME" << EOF
-insert into notes (note_date, note_body) values (unixepoch(), '$NOTE');
+insert into notes (note_date, note_body) values (unixepoch(), '${NOTE//\'/\'\'}');
 EOF
 	rm $TMPFILE;
 }
